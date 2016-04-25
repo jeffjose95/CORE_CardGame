@@ -9,19 +9,20 @@ import java.util.Scanner;
  * A loader and factory class for cards.
  */
 public class CardLibrary {
-    private HashMap<String, Card> library;
+    private HashMap<String, String> library;
 
     public CardLibrary(String filePath) {
-        library = new HashMap<String, Card>();
+        library = new HashMap<String, String>();
         load(new File(filePath));
     }
 
     public boolean load(File file) {
         try(Scanner in = new Scanner(file)) {
             while (in.hasNextLine()) {
-                Card card = parseCard(in.nextLine());
+                String str = in.nextLine();
+                Card card = parseCard(str);
                 if (card != null)
-                    library.putIfAbsent(card.getName(), card);
+                    library.putIfAbsent(card.getName(), str);
             }
         } catch(Exception e) {
             e.printStackTrace();
@@ -29,6 +30,7 @@ public class CardLibrary {
         }
         return true;
     }
+    public Card getCard(String name) { return parseCard(library.get(name)); }
 
     private Card parseCard(String str) {
         Scanner hold = new Scanner(str);
@@ -43,8 +45,8 @@ public class CardLibrary {
         String description = in.next();
         String el = in.next();
         Element element = null;
-        if (el != " ")
-            element = Element.valueOf(el);
+        if (!el.equals("null"))
+            element = Element.valueOf(el.toUpperCase());
         int manaCost = Integer.parseInt(in.next());
         switch(type) {
             case "mon": // add atk, def, sacrifices
