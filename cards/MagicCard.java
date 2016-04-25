@@ -1,7 +1,5 @@
 package cards;
 
-import board.Player;
-
 public class MagicCard extends Card {
     public final boolean isEquip;
 

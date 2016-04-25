@@ -6,7 +6,7 @@ public abstract class Card implements Comparable<Card>, CardInterface {
     private Element element;
     private String name, description;
     private Ability[] abilities;
-    
+
     public Card(String name, String description, int manaCost) { this(name, description, manaCost, null); }
     public Card(String name, String description, Element element, int manaCost) {
         this(name, description, element, manaCost, null);
@@ -21,6 +21,15 @@ public abstract class Card implements Comparable<Card>, CardInterface {
         this.element = element;
         this.abilities = abilities;
         faceUp = false;
+    }
+
+    @Override
+    public boolean setAbilities(Ability... abilities) {
+        if (this.abilities == null) {
+            this.abilities = abilities;
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -43,5 +52,10 @@ public abstract class Card implements Comparable<Card>, CardInterface {
     public boolean flip() {
         faceUp = !faceUp;
         return faceUp;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName()+" "+name+" ("+element+", "+ manaCost+"): "+description;
     }
 }
