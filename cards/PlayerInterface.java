@@ -77,13 +77,14 @@ public interface PlayerInterface extends Attackable {
      * @return the new maximum health value
      */
     public int changeMaxHealth(int change);
-    public int getManaRegen(int change);
+    public int getManaRegen();
     /**
      * Changes this player's mana regen.
      * @param change the change in mana regen
      * @return the new mana regen
      */
-    public int changeMaxHealth(int change);
-    public boolean attack(Card card, Attackable[] targets);
-    public boolean attack(Card card, boolean useSpecialIfPossible, Attackable[] targets);
+    public int changeManaRegen(int change);
+    public Deck getDeck();
+    public int attack(Card attacker, Attackable... targets);
+    public int attack(Card attacker, boolean useSpecialIfPossible, Attackable... targets);
 }

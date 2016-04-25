@@ -40,7 +40,7 @@ public class Player implements PlayerInterface {
             if (hand[i] == null)
                 break;
         if (i < 5) {
-            c = (l0Monster ? deck.drawL0Monster : deck.draw());
+            c = (l0Monster ? deck.drawL0Monster() : deck.draw());
             hand[i] = c;
         }
         return c;
@@ -49,6 +49,15 @@ public class Player implements PlayerInterface {
     public Card play(int placeInHand, int placeToPlay, Player playTo) {
         // TODO implement play
         return hand[placeInHand];
+    }
+    @Override
+    public Card discardFromHand(int index) {
+        Card toDiscard = hand[index];
+        if (toDiscard != null) {
+            hand[index] = null;
+            graveyard.add(toDiscard);
+        }
+        return toDiscard;
     }
 
     @Override public int              getHealth()    { return health;    }
@@ -101,18 +110,28 @@ public class Player implements PlayerInterface {
     }
 
     @Override
-    public int attack(Card attacker, Attackable[] defender) { return attack(attacker, false, defender); }
+    public int attack(Card attacker, Attackable... targets) { return attack(attacker, false, targets); }
     @Override
-    public int attack(Card attacker, boolean useSpecialIfPossible, Attackable[] defender) {
-        // TODO implement attack
-        return defender.defend(attacker, true);
+    public int attack(Card attacker, boolean useSpecialIfPossible, Attackable... targets) {
+        int dmg = 0;
+        if (attacker instanceof MonsterCard && !useSpecialIfPossible) {
+            dmg = ((MonsterCard) attacker).getAtk();
+        } else {
+            // TODO implement attack
+        }
+        int i = 0;
+        for (Attackable defender : targets)
+            i += defender.defend(attacker, dmg, true);
+        return i;
     }
 
     @Override
     public int defend(Card attacker, int damage, boolean allowCounter) {
-        health -= damage; // no elemental adjustment
+        int hold = Math.min(damage, health);
+        health -= damage;
         if (isDead())
             death(null);
+        return hold;
     }
 
     @Override public boolean isDead() { return health <= 0; }

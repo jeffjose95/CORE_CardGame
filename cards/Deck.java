@@ -3,7 +3,13 @@ package cards;
 import java.util.ArrayList;
 
 public class Deck extends ArrayList<Card> {
-    public Deck() {}
+    public Deck() { super(40); }
+    public Deck(Card... cards) {
+        super();
+        for (Card card : cards)
+            if (card != null)
+                add(card);
+    }
 
     public Card draw() {
         if (isEmpty())

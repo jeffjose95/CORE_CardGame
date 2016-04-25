@@ -1,7 +1,5 @@
 package cards;
 
-import board.Player;
-
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -65,13 +63,7 @@ public class MonsterCard extends Card implements Attackable {
                 // More cases will be added as the need arises.
                 }
     }
-    public boolean setAbilities(Ability... abilities) {
-        if (this.abilities == null) {
-            this.abilities = abilities;
-            return true;
-        }
-        return false;
-    }
+    
     public boolean equip(MagicCard equip)              { return equips.add(equip); }
     public boolean equip(LinkedList<MagicCard> equips) { return this.equips.addAll(equips); }
     public LinkedList<MagicCard> getEquips()           { return equips; }

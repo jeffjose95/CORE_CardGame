@@ -3,7 +3,7 @@ package cards;
 import java.util.Scanner;
 
 public class Ability {
-    public final String activateType, abilityType, target;
+    public final String activateType, activateSubtype, abilityType, abilitySubtype, target, targetSpec;
     public final double magnitude;
     public final int manaCost; // should be 0 for automatically triggered types
 
@@ -16,18 +16,24 @@ public class Ability {
         Scanner hold = new Scanner(info);
         Scanner in = hold.useDelimiter(":");
         activateType = in.next();
+        activateSubtype = in.next();
         abilityType = in.next();
+        abilitySubtype = in.next();
         target = in.next();
+        targetSpec = in.next();
         magnitude = Double.parseDouble(in.next());
         manaCost = Integer.parseInt(in.next());
         hold.close();
         in.close();
     }
-    public Ability(String activateType, String abilityType, String target, double magnitude,
-                   int manaCost) {
+    public Ability(String activateType, String activateSubtype, String abilityType, String abilitySubtype,
+                   String target, String targetSpec, double magnitude, int manaCost) {
         this.activateType = activateType;
+        this.activateSubtype = activateSubtype;
         this.abilityType = abilityType;
+        this.abilitySubtype = abilitySubtype;
         this.target = target;
+        this.targetSpec = targetSpec;
         this.magnitude = magnitude;
         this.manaCost = manaCost;
     }
