@@ -1,6 +1,5 @@
 package cards;
 
-import board.Player;
 
 public class ModifierCard extends Card {
     public ModifierCard(String name, String description, int manaCost) {
