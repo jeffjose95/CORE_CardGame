@@ -152,6 +152,7 @@ public class Player implements PlayerInterface {
             for (Ability ability : card.getAbilities()) {
                 switch(ability.activateType) {
                     case "onPlay":
+                    case "passive":
                         if (ability.targetSpec.contains("player")) { // abilities with effects on players
                             boolean both = ability.target.contains("both");
                             Player[] target = new Player[both ? 1 : 2];
@@ -161,12 +162,9 @@ public class Player implements PlayerInterface {
                                 target[target.length - 1] = opponent;
                             for (Player p : target)
                                 applyTo(ability, card, p);
-                        } else {
+                        } else { // TODO implement abilities with non-player targets
 
                         }
-                        break;
-                    case "passive":
-                        // TODO implement passive
                         break;
                     default: // do active abilities later in phase
                 }
