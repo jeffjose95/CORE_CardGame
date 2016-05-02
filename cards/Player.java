@@ -141,7 +141,9 @@ public class Player implements PlayerInterface {
     @Override public boolean isDead() { return health <= 0; }
     @Override
     public void death(Card attacker) {
-        // TODO implement death
+        if (attacker instanceof Attackable && !((Attackable) attacker.isDead()) {}
+            // TODO implement onDeath ability activation
+        }
     }
 
     public void battlePhase(Card... useSpecial) {
