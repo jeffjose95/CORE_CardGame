@@ -10,6 +10,7 @@ public class Player implements PlayerInterface {
     private ModifierCard[] modifiers;
     private int mana, maxMana, manaRegen, health, maxHealth;
     private LinkedList<Card> graveyard;
+    private LinkedList<Card> playedThisTurn;
 
     public Player(Deck deck) {
         mana = 30;
@@ -28,6 +29,7 @@ public class Player implements PlayerInterface {
                 needsL0Monster = true;
         }
         hand[0] = draw(needsL0Monster);
+        playedThisTurn = new LinkedList<Card>();
     }
 
     @Override public MonsterCard drawL0Monster() { return (MonsterCard) draw(true); }
@@ -47,8 +49,10 @@ public class Player implements PlayerInterface {
     }
     @Override
     public Card play(int placeInHand, int placeToPlay, Player playTo) {
+        Card toPlay = hand[placeInHand];
         // TODO implement play
-        return hand[placeInHand];
+        playedThisTurn.add(toPlay);
+        return toPlay;
     }
     @Override
     public Card discardFromHand(int index) {
@@ -138,5 +142,92 @@ public class Player implements PlayerInterface {
     @Override
     public void death(Card attacker) {
         // TODO implement death
+    }
+
+    public void battlePhase(Card... useSpecial) {
+        while (!playedThisTurn.isEmpty()) {
+            Card card = playedThisTurn.removeFirst();
+            for (Ability ability : card.getAbilities()) {
+                switch(ability.activateType) {
+                    case "onPlay":
+                        if (ability.targetSpec.contains("player")) { // abilities with effects on players
+                            boolean both = ability.target.contains("both");
+                            Player[] target = new Player[both ? 1 : 2];
+                            if (both || ability.target.contains("ally"))
+                                target[0] = this;
+                            if (ability.target.contains("opponent"))
+                                target[target.length - 1] = opponent;
+                            for (Player p : target)
+                                applyTo(ability, card, p);
+                        } else {
+
+                        }
+                        break;
+                    case "passive":
+                        // TODO implement passive
+                        break;
+                    default: // do active abilities later in phase
+                }
+            }
+        }
+        // TODO implement normal attack / use special if possible
+    }
+    private static boolean applyTo(Ability a, Card source, Object target) {
+        if (! (target instanceof Attackable || target instanceof Card))
+            return false;
+        switch(ability.abilityType) { // could have used reflection, but this seems more stable
+            case "damage":
+                if (target instanceof Attackable) {
+                    ((Attackable) target).defend(card, ability.magnitude, true);
+                    return true;
+                }
+                break;
+            case "changeAtk":
+                if (target instanceof MonsterCard) {
+                    ((MonsterCard) target).changeAtk(ability.magnitude);
+                    return true;
+                }
+                break;
+            case "changeDef":
+                if (target instanceof MonsterCard) {
+                    ((MonsterCard) target).changeDef(ability.magnitude);
+                    return true;
+                }
+                break;
+            case "changeHealth":
+                if (target instanceof Attackable) {
+                    ((Attackable) target).changeHealth(ability.magnitude);
+                    return true;
+                }
+                break;
+            case "changeMaxHealth":
+                if (target instanceof Attackable) {
+                    ((Attackable) target).changeMaxHealth(ability.magnitude);
+                    return true;
+                }
+                break;
+            case "changeMana":
+                if (target instanceof Player) {
+                    ((Player) target).changeMana(ability.magnitude);
+                    return true;
+                }
+                break;
+            case "changeMaxMana":
+                if (target instanceof Player) {
+                    ((Player) target).changeMaxMana(ability.magnitude);
+                    return true;
+                }
+                break;
+            case "changeManaRegen":
+                if (target instanceof Player) {
+                    ((Player) target).changeManaRegen(ability.magnitude);
+                    return true;
+                }
+                break;
+            case "negateEffect":
+                // TODO implement negate effect
+                break;
+        }
+        return false;
     }
 }
