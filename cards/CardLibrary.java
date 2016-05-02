@@ -1,6 +1,7 @@
 package cards;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Scanner;
@@ -31,6 +32,11 @@ public class CardLibrary {
         return true;
     }
     public Card getCard(String name) { return parseCard(library.get(name)); }
+    public Card getRandomCard() {
+        String[] cards = library.values().toArray(new String[library.size()]);
+        return parseCard(cards[(int) (Math.random() * cards.length)]);
+    }
+    public int size() { return library.size(); }
 
     private Card parseCard(String str) {
         Scanner hold = new Scanner(str);
