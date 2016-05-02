@@ -174,62 +174,63 @@ public class Player implements PlayerInterface {
         }
         // TODO implement normal attack / use special if possible
     }
-    private static boolean applyTo(Ability a, Card source, Object target) {
-        if (! (target instanceof Attackable || target instanceof Card))
+    private static boolean applyTo(Ability ability, Card source, Object target) {
+        if (! (target instanceof Attackable || target instanceof Card) || ability.manaCost > mana)
             return false;
         switch(ability.abilityType) { // could have used reflection, but this seems more stable
             case "damage":
                 if (target instanceof Attackable) {
                     ((Attackable) target).defend(card, ability.magnitude, true);
-                    return true;
-                }
-                break;
+                    break;
+                } else
+                    return false;
             case "changeAtk":
                 if (target instanceof MonsterCard) {
                     ((MonsterCard) target).changeAtk(ability.magnitude);
-                    return true;
-                }
-                break;
+                    break;
+                } else
+                    return false;
             case "changeDef":
                 if (target instanceof MonsterCard) {
                     ((MonsterCard) target).changeDef(ability.magnitude);
-                    return true;
-                }
-                break;
+                    break;
+                } else
+                    return false;
             case "changeHealth":
                 if (target instanceof Attackable) {
                     ((Attackable) target).changeHealth(ability.magnitude);
-                    return true;
-                }
-                break;
+                    break;
+                } else
+                    return false;
             case "changeMaxHealth":
                 if (target instanceof Attackable) {
                     ((Attackable) target).changeMaxHealth(ability.magnitude);
-                    return true;
-                }
-                break;
+                    break;
+                } else
+                    return false;
             case "changeMana":
                 if (target instanceof Player) {
                     ((Player) target).changeMana(ability.magnitude);
-                    return true;
-                }
-                break;
+                    break;
+                } else
+                    return false;
             case "changeMaxMana":
                 if (target instanceof Player) {
                     ((Player) target).changeMaxMana(ability.magnitude);
-                    return true;
-                }
-                break;
+                    break;
+                } else
+                    return false;
             case "changeManaRegen":
                 if (target instanceof Player) {
                     ((Player) target).changeManaRegen(ability.magnitude);
-                    return true;
-                }
-                break;
+                    break;
+                } else
+                    return false;
             case "negateEffect":
                 // TODO implement negate effect
                 break;
         }
-        return false;
+        mana -= ability.manaCost;
+        return true;
     }
 }
