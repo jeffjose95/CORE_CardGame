@@ -56,6 +56,6 @@ public abstract class Card implements Comparable<Card>, CardInterface {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName()+" "+name+" ("+element+", "+ manaCost+"): "+description;
+        return getClass().getSimpleName()+" \""+name+"\" ("+element+", "+ manaCost+"): "+description;
     }
 }

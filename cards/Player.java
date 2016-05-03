@@ -10,6 +10,7 @@ public class Player implements PlayerInterface {
     private ModifierCard[] modifiers;
     private int mana, maxMana, manaRegen, health, maxHealth;
     private LinkedList<Card> graveyard;
+    private LinkedList<Card> playedThisTurn;
 
     public Player(Deck deck) {
         mana = 30;
@@ -28,6 +29,7 @@ public class Player implements PlayerInterface {
                 needsL0Monster = true;
         }
         hand[0] = draw(needsL0Monster);
+        playedThisTurn = new LinkedList<Card>();
     }
 
     @Override public MonsterCard drawL0Monster() { return (MonsterCard) draw(true); }
@@ -47,8 +49,10 @@ public class Player implements PlayerInterface {
     }
     @Override
     public Card play(int placeInHand, int placeToPlay, Player playTo) {
+        Card toPlay = hand[placeInHand];
         // TODO implement play
-        return hand[placeInHand];
+        playedThisTurn.add(toPlay);
+        return toPlay;
     }
     @Override
     public Card discardFromHand(int index) {
@@ -106,6 +110,7 @@ public class Player implements PlayerInterface {
     public Player setOpponent(Player opponent) {
         Player hold = this.opponent;
         this.opponent = opponent;
+        opponent.setOpponent(this);
         return hold;
     }
 
@@ -137,6 +142,130 @@ public class Player implements PlayerInterface {
     @Override public boolean isDead() { return health <= 0; }
     @Override
     public void death(Card attacker) {
-        // TODO implement death
+        if (attacker instanceof Attackable && !((Attackable) attacker).isDead()) {
+            // TODO implement onDeath ability activation
+        }
+    }
+
+    public void battlePhase(Card... useSpecial) {
+        while (!playedThisTurn.isEmpty()) {
+            Card card = playedThisTurn.removeFirst();
+            for (Ability ability : card.getAbilities()) {
+                switch(ability.activateType) {
+                    case "onPlay":
+                    case "passive":
+                        if (ability.targetSpec.contains("player")) { // abilities with effects on players
+                            boolean both = ability.target.contains("both");
+                            Player[] target = new Player[both ? 1 : 2];
+                            if (both || ability.target.contains("ally"))
+                                target[0] = this;
+                            if (ability.target.contains("opponent"))
+                                target[target.length - 1] = opponent;
+                            for (Player p : target)
+                                applyTo(ability, card, p);
+                        } else { // TODO implement abilities with non-player targets
+
+                        }
+                        break;
+                    default: // do active abilities later in phase
+                }
+            }
+        }
+        // TODO implement normal attack / use special if possible
+    }
+    public void buryDead() { // remove dead monsters from the field
+        for (int i = 0; i < monsters.length; i ++)
+            if (monsters[i].isDead()) {
+                graveyard.add(monsters[i]);
+                monsters[i] = null;
+            }
+        // TODO remove destroyed Magic and Modifier cards
+    }
+    private boolean applyTo(Ability ability, Card source, Object target) { // apply ability effect from source to target
+        if (! (target instanceof Attackable || target instanceof Card) || ability.manaCost > mana)
+            return false;
+        switch(ability.abilityType) { // could have used reflection, but this seems more stable
+            case "damage":
+                if (target instanceof Attackable) {
+                    ((Attackable) target).defend(source, (int) ability.magnitude, true);
+                    break;
+                }
+                return false;
+            case "changeAtk":
+                if (target instanceof MonsterCard) {
+                    ((MonsterCard) target).changeAtk((int) ability.magnitude);
+                    break;
+                }
+                return false;
+            case "changeDef":
+                if (target instanceof MonsterCard) {
+                    ((MonsterCard) target).changeDef((int) ability.magnitude);
+                    break;
+                }
+                return false;
+            case "changeHealth":
+                if (target instanceof Player) {
+                    ((Player) target).changeHealth((int) ability.magnitude);
+                    break;
+                } else if (target instanceof MonsterCard) {
+                    ((MonsterCard) target).changeHP((int) ability.magnitude);
+                    break;
+                }
+                return false;
+            case "changeMaxHealth":
+                if (target instanceof Player) {
+                    ((Player) target).changeMaxHealth((int) ability.magnitude);
+                    break;
+                } else if (target instanceof MonsterCard) {
+                    ((MonsterCard) target).changeDef((int) ability.magnitude);
+                    break;
+                }
+                return false;
+            case "changeMana":
+                if (target instanceof Player) {
+                    ((Player) target).changeMana((int) ability.magnitude);
+                    break;
+                }
+                return false;
+            case "changeMaxMana":
+                if (target instanceof Player) {
+                    ((Player) target).changeMaxMana((int) ability.magnitude);
+                    break;
+                }
+                return false;
+            case "changeManaRegen":
+                if (target instanceof Player) {
+                    ((Player) target).changeManaRegen((int) ability.magnitude);
+                    break;
+                }
+                return false;
+            case "destroy":
+                if (target instanceof MonsterCard) {
+                    ((MonsterCard) target).changeHP(-512);
+                    break;
+                } else if (target instanceof MagicCard || target instanceof ModifierCard) {
+                    // TODO flag target for removal
+                }
+                return false;
+            case "negateEffect":
+                // TODO implement negate effect
+                break;
+        }
+        mana -= ability.manaCost;
+        return true;
+    }
+
+    /**
+     * The preferred method for instantiating two Player objects which are opponents of one another.
+     * @param deck1 Player 0's deck
+     * @param deck2 Player 1's deck
+     * @return an array containing Player 0 and Player 1
+     */
+    public static Player[] initPlayers(Deck deck0, Deck deck1) {
+        Player[] players = new Player[2];
+        players[0] = new Player(deck0);
+        players[1] = new Player(deck1);
+        players[0].setOpponent(players[1]);
+        return players;
     }
 }

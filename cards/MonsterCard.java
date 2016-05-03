@@ -63,7 +63,7 @@ public class MonsterCard extends Card implements Attackable {
                 // More cases will be added as the need arises.
                 }
     }
-    
+
     public boolean equip(MagicCard equip)              { return equips.add(equip); }
     public boolean equip(LinkedList<MagicCard> equips) { return this.equips.addAll(equips); }
     public LinkedList<MagicCard> getEquips()           { return equips; }
@@ -91,6 +91,10 @@ public class MonsterCard extends Card implements Attackable {
         def += change;
         hp += change;
         return def;
+    }
+    public int changeHP(int change) {
+        hp = Math.min(hp + change, def);
+        return hp;
     }
     @Override public boolean isDead() { return hp <= 0; }
 
