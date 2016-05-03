@@ -141,7 +141,7 @@ public class Player implements PlayerInterface {
     @Override public boolean isDead() { return health <= 0; }
     @Override
     public void death(Card attacker) {
-        if (attacker instanceof Attackable && !((Attackable) attacker.isDead()) {}
+        if (attacker instanceof Attackable && !((Attackable) attacker).isDead()) {
             // TODO implement onDeath ability activation
         }
     }
@@ -179,61 +179,67 @@ public class Player implements PlayerInterface {
                 monsters[i] = null;
             }
     }
-    private static boolean applyTo(Ability ability, Card source, Object target) {
+    private boolean applyTo(Ability ability, Card source, Object target) {
         if (! (target instanceof Attackable || target instanceof Card) || ability.manaCost > mana)
             return false;
         switch(ability.abilityType) { // could have used reflection, but this seems more stable
             case "damage":
                 if (target instanceof Attackable) {
-                    ((Attackable) target).defend(card, ability.magnitude, true);
+                    ((Attackable) target).defend(source, (int) ability.magnitude, true);
                     break;
                 } else
                     return false;
             case "changeAtk":
                 if (target instanceof MonsterCard) {
-                    ((MonsterCard) target).changeAtk(ability.magnitude);
+                    ((MonsterCard) target).changeAtk((int) ability.magnitude);
                     break;
                 } else
                     return false;
             case "changeDef":
                 if (target instanceof MonsterCard) {
-                    ((MonsterCard) target).changeDef(ability.magnitude);
+                    ((MonsterCard) target).changeDef((int) ability.magnitude);
                     break;
                 } else
                     return false;
             case "changeHealth":
-                if (target instanceof Attackable) {
-                    ((Attackable) target).changeHealth(ability.magnitude);
+                if (target instanceof Player) {
+                    ((Player) target).changeHealth((int) ability.magnitude);
                     break;
-                } else
+                } else if (target instanceof MonsterCard) {
+                    ((MonsterCard) target).changeHP((int) ability.magnitude);
+                    break;
+                }
                     return false;
             case "changeMaxHealth":
-                if (target instanceof Attackable) {
-                    ((Attackable) target).changeMaxHealth(ability.magnitude);
+                if (target instanceof Player) {
+                    ((Player) target).changeMaxHealth((int) ability.magnitude);
                     break;
-                } else
+                } else if (target instanceof MonsterCard) {
+                    ((MonsterCard) target).changeDef((int) ability.magnitude);
+                    break;
+                }
                     return false;
             case "changeMana":
                 if (target instanceof Player) {
-                    ((Player) target).changeMana(ability.magnitude);
+                    ((Player) target).changeMana((int) ability.magnitude);
                     break;
                 } else
                     return false;
             case "changeMaxMana":
                 if (target instanceof Player) {
-                    ((Player) target).changeMaxMana(ability.magnitude);
+                    ((Player) target).changeMaxMana((int) ability.magnitude);
                     break;
                 } else
                     return false;
             case "changeManaRegen":
                 if (target instanceof Player) {
-                    ((Player) target).changeManaRegen(ability.magnitude);
+                    ((Player) target).changeManaRegen((int) ability.magnitude);
                     break;
                 } else
                     return false;
             case "destroy":
                 if (target instanceof MonsterCard) {
-                    ((MonsterCard) target).changeHealth(-512);
+                    ((MonsterCard) target).changeHP(-512);
                     break;
                 } else
                     return false;
