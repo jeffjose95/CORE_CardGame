@@ -110,6 +110,7 @@ public class Player implements PlayerInterface {
     public Player setOpponent(Player opponent) {
         Player hold = this.opponent;
         this.opponent = opponent;
+        opponent.setOpponent(this);
         return hold;
     }
 
@@ -172,14 +173,14 @@ public class Player implements PlayerInterface {
         }
         // TODO implement normal attack / use special if possible
     }
-    public void buryDead() {
+    public void buryDead() { // remove dead monsters from the field
         for (int i = 0; i < monsters.length; i ++)
             if (monsters[i].isDead()) {
                 graveyard.add(monsters[i]);
                 monsters[i] = null;
             }
     }
-    private boolean applyTo(Ability ability, Card source, Object target) {
+    private boolean applyTo(Ability ability, Card source, Object target) { // apply ability effect from source to target
         if (! (target instanceof Attackable || target instanceof Card) || ability.manaCost > mana)
             return false;
         switch(ability.abilityType) { // could have used reflection, but this seems more stable
@@ -249,5 +250,19 @@ public class Player implements PlayerInterface {
         }
         mana -= ability.manaCost;
         return true;
+    }
+
+    /**
+     * The preferred method for instantiating two Player objects which are opponents of one another.
+     * @param deck1 Player 0's deck
+     * @param deck2 Player 1's deck
+     * @return an array containing Player 0 and Player 1
+     */
+    public static Player[] initPlayers(Deck deck0, Deck deck1) {
+        Player[] players = new Player[2];
+        players[0] = new Player(deck0);
+        players[1] = new Player(deck1);
+        players[0].setOpponent(players[1]);
+        return players;
     }
 }
