@@ -172,6 +172,13 @@ public class Player implements PlayerInterface {
         }
         // TODO implement normal attack / use special if possible
     }
+    public void buryDead() {
+        for (int i = 0; i < monsters.length; i ++)
+            if (monsters[i].isDead()) {
+                graveyard.add(monsters[i]);
+                monsters[i] = null;
+            }
+    }
     private static boolean applyTo(Ability ability, Card source, Object target) {
         if (! (target instanceof Attackable || target instanceof Card) || ability.manaCost > mana)
             return false;
@@ -221,6 +228,12 @@ public class Player implements PlayerInterface {
             case "changeManaRegen":
                 if (target instanceof Player) {
                     ((Player) target).changeManaRegen(ability.magnitude);
+                    break;
+                } else
+                    return false;
+            case "destroy":
+                if (target instanceof MonsterCard) {
+                    ((MonsterCard) target).changeHealth(-512);
                     break;
                 } else
                     return false;
