@@ -188,20 +188,20 @@ public class Player implements PlayerInterface {
                 if (target instanceof Attackable) {
                     ((Attackable) target).defend(source, (int) ability.magnitude, true);
                     break;
-                } else
-                    return false;
+                }
+                return false;
             case "changeAtk":
                 if (target instanceof MonsterCard) {
                     ((MonsterCard) target).changeAtk((int) ability.magnitude);
                     break;
-                } else
-                    return false;
+                }
+                return false;
             case "changeDef":
                 if (target instanceof MonsterCard) {
                     ((MonsterCard) target).changeDef((int) ability.magnitude);
                     break;
-                } else
-                    return false;
+                }
+                return false;
             case "changeHealth":
                 if (target instanceof Player) {
                     ((Player) target).changeHealth((int) ability.magnitude);
@@ -210,7 +210,7 @@ public class Player implements PlayerInterface {
                     ((MonsterCard) target).changeHP((int) ability.magnitude);
                     break;
                 }
-                    return false;
+                return false;
             case "changeMaxHealth":
                 if (target instanceof Player) {
                     ((Player) target).changeMaxHealth((int) ability.magnitude);
@@ -219,31 +219,31 @@ public class Player implements PlayerInterface {
                     ((MonsterCard) target).changeDef((int) ability.magnitude);
                     break;
                 }
-                    return false;
+                return false;
             case "changeMana":
                 if (target instanceof Player) {
                     ((Player) target).changeMana((int) ability.magnitude);
                     break;
-                } else
-                    return false;
+                }
+                return false;
             case "changeMaxMana":
                 if (target instanceof Player) {
                     ((Player) target).changeMaxMana((int) ability.magnitude);
                     break;
-                } else
-                    return false;
+                }
+                return false;
             case "changeManaRegen":
                 if (target instanceof Player) {
                     ((Player) target).changeManaRegen((int) ability.magnitude);
                     break;
-                } else
-                    return false;
+                }
+                return false;
             case "destroy":
                 if (target instanceof MonsterCard) {
                     ((MonsterCard) target).changeHP(-512);
                     break;
-                } else
-                    return false;
+                }
+                return false;
             case "negateEffect":
                 // TODO implement negate effect
                 break;
