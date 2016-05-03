@@ -179,6 +179,7 @@ public class Player implements PlayerInterface {
                 graveyard.add(monsters[i]);
                 monsters[i] = null;
             }
+        // TODO remove destroyed Magic and Modifier cards
     }
     private boolean applyTo(Ability ability, Card source, Object target) { // apply ability effect from source to target
         if (! (target instanceof Attackable || target instanceof Card) || ability.manaCost > mana)
@@ -242,6 +243,8 @@ public class Player implements PlayerInterface {
                 if (target instanceof MonsterCard) {
                     ((MonsterCard) target).changeHP(-512);
                     break;
+                } else if (target instanceof MagicCard || target instanceof ModifierCard) {
+                    // TODO flag target for removal
                 }
                 return false;
             case "negateEffect":
