@@ -147,31 +147,36 @@ public class Player implements PlayerInterface {
         }
     }
 
-    public void battlePhase(Card... useSpecial) {
-        while (!playedThisTurn.isEmpty()) {
-            Card card = playedThisTurn.removeFirst();
-            for (Ability ability : card.getAbilities()) {
-                switch(ability.activateType) {
-                    case "onPlay":
-                    case "passive":
-                        if (ability.targetSpec.contains("player")) { // abilities with effects on players
-                            boolean both = ability.target.contains("both");
-                            Player[] target = new Player[both ? 1 : 2];
-                            if (both || ability.target.contains("ally"))
-                                target[0] = this;
-                            if (ability.target.contains("opponent"))
-                                target[target.length - 1] = opponent;
-                            for (Player p : target)
-                                applyTo(ability, card, p);
-                        } else { // TODO implement abilities with non-player targets
+    public MonsterCard getMainMonster() { return monsters[0]; }
 
-                        }
-                        break;
-                    default: // do active abilities later in phase
+    public void battlePhase(Card... useSpecial) {
+        for (Card card : playedThisTurn) {
+            for (Ability ability : card.getAbilities()) {
+                if (ability.activateType.contains("onPlay")) {
+                    if (ability.targetSpec.contains("player")) { // abilities with effects on players
+                        boolean both = ability.target.contains("both");
+                        Player[] target = new Player[both ? 1 : 2];
+                        if (both || ability.target.contains("ally"))
+                            target[0] = this;
+                        if (ability.target.contains("opponent"))
+                            target[target.length - 1] = opponent;
+                        for (Player p : target)
+                            applyTo(ability, card, p);
+                    } else { // TODO implement abilities with non-player targets
+
+                    }
                 }
             }
         }
-        // TODO implement normal attack / use special if possible
+        if (monsters[0] != null) {
+            if (!useSpecial.contains(monsters[0])) {
+                MonsterCard opponentMain = opponent.getMainMonster();
+                monsters[0].attack(opponentMain == null ? opponent : opponentMain);
+            } else {
+                // TODO implement use special if possible
+            }
+        }
+        playedThisTurn.clear();
     }
     public void buryDead() { // remove dead monsters from the field
         for (int i = 0; i < monsters.length; i ++)
